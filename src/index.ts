@@ -4,14 +4,19 @@ type Item = {
 	quantity: number;
 }
 
-// WIP
-type Condition<T, CriteriaValue> = {
+/* WIP
+type Condition<T, value> = {
 	value: keyof T;
-	criteria: CriteriaValue;
-	groups: Array<keyof T>t ;
+	criteria: value;
+	groups: Array<keyof T>;
+} */
+
+type GroupingCondition = {
+	value: unknown;
+	criterion: "EQUAL_STRINGS" | "EQUAL_NUMBERS" | "GREATER_THAN" | "LESS_THAN" | "GREATER_THAN_OR_EQUAL" | "LESS_THAN_OR_EQUAL";
 }
 
-function arrayGroup<T extends Object, KeyType extends keyof T>(collection: T[], attributeName: KeyType, condition?: Condition<T>) {
+function arrayGroup<T extends Object, KeyType extends keyof T>(collection: T[], attributeName: KeyType, condition?: GroupingCondition) {
 
 	// init return object
 	const groupingObject: Record<string, T[]> = {};
@@ -27,12 +32,8 @@ function arrayGroup<T extends Object, KeyType extends keyof T>(collection: T[], 
 
 			// convert the attributeValue to string before using it as a key
 			groupingObject[attributeValue as string] = itemsGroup;
-
-
-			return groupingObject;
 		};
-
-
+		return groupingObject;
 	}
 }
 
