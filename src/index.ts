@@ -8,7 +8,7 @@ type Item = {
 type Condition<T, CriteriaValue> = {
 	value: keyof T;
 	criteria: CriteriaValue;
-	groups: Array<keyof T>;
+	groups: Array<keyof T>t ;
 }
 
 function arrayGroup<T extends Object, KeyType extends keyof T>(collection: T[], attributeName: KeyType, condition?: Condition<T>) {
