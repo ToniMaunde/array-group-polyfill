@@ -11,12 +11,21 @@ type User = {
 	lastName: string;
 }
 
+type FootballPlayer = {
+	fullName: string;
+	club: string;
+	jerseyNo: number;
+}
+
+// TODO: do not forget to account for non specified group names
+// And check your phone
+
 type GroupingCondition = {
 	value: string | number | boolean;
-	criterion: "EQUAL_STRINGS" | "EQUAL_NUMBERS" | "EQUAL_BOOLEANS" | "GREATER_THAN" | "LESS_THAN" | "GREATER_THAN_OR_EQUAL" | "LESS_THAN_OR_EQUAL";
+	criterion: "EQUAL_STRINGS" | "EQUAL_NUMBERS" | "EQUAL_BOOLEANS" | "STRING_INCLUDES" | "GREATER_THAN" | "LESS_THAN" | "GREATER_THAN_OR_EQUAL" | "LESS_THAN_OR_EQUAL";
 	caseSensitive?: boolean;
-	groupMeetsCriterion: string;
-	groupFailsCriterion: string;
+	groupMeetsCriterion?: string;
+	groupFailsCriterion?: string;
 }
 
 function arrayGroup<T extends Object, KeyType extends keyof T>(collection: T[], attributeName: KeyType, condition?: GroupingCondition) {
@@ -24,6 +33,9 @@ function arrayGroup<T extends Object, KeyType extends keyof T>(collection: T[], 
 	const groupingObject: Record<string, T[]> = {};
 
 	if (condition !== undefined) {
+
+		const meetsCriterion = condition.groupMeetsCriterion ?? "passes";
+		const failsCriterion = condition.groupFailsCriterion ?? "fails";
 
 		if (condition.criterion === "EQUAL_BOOLEANS") {
 			const innerCollectionForMatchingCriterion: T[] = collection.filter(element => {
@@ -34,8 +46,8 @@ function arrayGroup<T extends Object, KeyType extends keyof T>(collection: T[], 
 				return (element[attributeName] as unknown as boolean) !== condition.value
 			});
 
-			groupingObject[condition.groupMeetsCriterion] = innerCollectionForMatchingCriterion;
-			groupingObject[condition.groupFailsCriterion] = innerCollectionForFailingCriterion;
+			groupingObject[meetsCriterion] = innerCollectionForMatchingCriterion;
+			groupingObject[failsCriterion] = innerCollectionForFailingCriterion;
 
 			return groupingObject;
 		}
@@ -52,8 +64,23 @@ function arrayGroup<T extends Object, KeyType extends keyof T>(collection: T[], 
 				return (element[attributeName] as unknown as string) !== condition.value
 			});
 
-			groupingObject[condition.groupMeetsCriterion] = innerCollectionForMatchingCriterion;
-			groupingObject[condition.groupFailsCriterion] = innerCollectionForFailingCriterion;
+			groupingObject[meetsCriterion] = innerCollectionForMatchingCriterion;
+			groupingObject[failsCriterion] = innerCollectionForFailingCriterion;
+
+			return groupingObject;
+		}
+
+		if (condition.criterion === "EQUAL_NUMBERS") {
+			const innerCollectionForMatchingCriterion: T[] = collection.filter(element => {
+				return (element[attributeName] as unknown as number) === (condition.value as number)
+			});
+
+			const innerCollectionForFailingCriterion: T[] = collection.filter(element => {
+				return (element[attributeName] as unknown as number) !== (condition.value as number)
+			});
+
+			groupingObject[meetsCriterion] = innerCollectionForMatchingCriterion;
+			groupingObject[failsCriterion] = innerCollectionForFailingCriterion;
 
 			return groupingObject;
 		}
@@ -66,8 +93,8 @@ function arrayGroup<T extends Object, KeyType extends keyof T>(collection: T[], 
 				return (element[attributeName] as unknown as number) <= (condition.value as number)
 			});
 
-			groupingObject[condition.groupMeetsCriterion] = innerCollectionForMatchingCriterion;
-			groupingObject[condition.groupFailsCriterion] = innerCollectionForFailingCriterion;
+			groupingObject[meetsCriterion] = innerCollectionForMatchingCriterion;
+			groupingObject[failsCriterion] = innerCollectionForFailingCriterion;
 
 			return groupingObject;
 		}
@@ -130,6 +157,34 @@ const users: User[] = [
 	},
 ];
 
+const footballPlayers: FootballPlayer[] = [
+	{
+		fullName: "Eric Cantona",
+		club: "Manchester United FC",
+		jerseyNo: 7
+	},
+	{
+		fullName: "Raul Gonzalez",
+		club: "Real Madrid FC",
+		jerseyNo: 7
+	},
+	{
+		fullName: "Cristiano Ronaldo",
+		club: "Al Nassr",
+		jerseyNo: 7
+	},
+	{
+		fullName: "Leonel Messi",
+		club: "Inter Miami",
+		jerseyNo: 10
+	},
+	{
+		fullName: "Eden Hazard",
+		club: "Free agent",
+		jerseyNo: 10
+	},
+];
+
 // Basic grouping using a groupable attribute
 const groupedItems = arrayGroup(inventory, "type");
 
@@ -150,7 +205,17 @@ const groupedItemsUsingMatchingStrings = arrayGroup(users, "lastName", {
 	groupFailsCriterion: "Humans"
 });
 
+const groupedItemsUsingEqualNumbers = arrayGroup(footballPlayers, "jerseyNo", {
+	value: 7,
+	criterion: "EQUAL_NUMBERS",
+	groupMeetsCriterion: "iconic",
+	groupFailsCriterion: "meh"
+});
+
+/*
 console.log(groupedItems);
 console.log(groupedItemsUsingGreaterThan);
 console.log(groupedItemsUsingABoolean);
 console.log(groupedItemsUsingMatchingStrings);
+*/
+console.log(groupedItemsUsingEqualNumbers);
