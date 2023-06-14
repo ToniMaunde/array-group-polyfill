@@ -1,21 +1,22 @@
 {
-  "name": "array-polyfills",
-  "version": "1.0.0",
-  "description": "polyfilling new array methods",
+  "name": "array-group-polyfill",
+  "description": "A polyfill for the yet to be supported by all browsers Array.prototype.group()",
   "main": "index.ts",
   "scripts": {
-    "dev": "nodemon src/index.ts"
+    "dev": "nodemon src/index.ts",
+    "build": "tsup src/index.ts --format cjs,esm --dts"
   },
   "keywords": [
     "arrays",
     "ts",
-    "polyfill"
+    "group"
   ],
   "author": "Milton David Alberto",
-  "license": "ISC",
   "devDependencies": {
     "nodemon": "^2.0.22",
     "ts-node": "^10.9.1",
+    "tsup": "^6.7.0",
     "typescript": "^5.1.3"
-  }
+  },
+  "license": "MIT"
 }
