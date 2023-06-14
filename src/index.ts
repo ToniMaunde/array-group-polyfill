@@ -17,11 +17,17 @@ type FootballPlayer = {
 	jerseyNo: number;
 }
 
+type Country = {
+	name: string;
+	population: number;
+	year: number;
+}
+
 // And check your phone
 
 type GroupingCondition = {
 	value: string | number | boolean;
-	criterion: "EQUAL_STRINGS" | "EQUAL_NUMBERS" | "EQUAL_BOOLEANS" | "STRING_INCLUDES" | "GREATER_THAN" | "LESS_THAN" | "GREATER_THAN_OR_EQUAL" | "LESS_THAN_OR_EQUAL";
+	criterion: "EQUAL_STRINGS" | "STRING_INCLUDES" | "EQUAL_BOOLEANS" | "EQUAL_NUMBERS" | "GREATER_THAN" | "LESS_THAN" | "GREATER_THAN_OR_EQUAL" | "LESS_THAN_OR_EQUAL";
 	caseSensitive?: boolean;
 	groupMeetsCriterion?: string;
 	groupFailsCriterion?: string;
@@ -99,12 +105,14 @@ function arrayGroup<T extends Object, KeyType extends keyof T>(collection: T[], 
 		}
 
 		if (condition.criterion === "EQUAL_NUMBERS") {
+			const valueAsNumber = condition.value as number;
+
 			const innerCollectionForMatchingCriterion: T[] = collection.filter(element => {
-				return (element[attributeName] as unknown as number) === (condition.value as number)
+				return (element[attributeName] as unknown as number) === valueAsNumber
 			});
 
 			const innerCollectionForFailingCriterion: T[] = collection.filter(element => {
-				return (element[attributeName] as unknown as number) !== (condition.value as number)
+				return (element[attributeName] as unknown as number) !== valueAsNumber
 			});
 
 			groupingObject[meetsCriterion] = innerCollectionForMatchingCriterion;
@@ -114,11 +122,61 @@ function arrayGroup<T extends Object, KeyType extends keyof T>(collection: T[], 
 		}
 
 		if (condition.criterion === "GREATER_THAN") {
+			const valueAsNumber = condition.value as number;
+
 			const innerCollectionForMatchingCriterion: T[] = collection.filter(element => {
-				return (element[attributeName] as unknown as number) > (condition.value as number)
+				return (element[attributeName] as unknown as number) > valueAsNumber
 			});
 			const innerCollectionForFailingCriterion: T[] = collection.filter(element => {
-				return (element[attributeName] as unknown as number) <= (condition.value as number)
+				return (element[attributeName] as unknown as number) <= valueAsNumber
+			});
+
+			groupingObject[meetsCriterion] = innerCollectionForMatchingCriterion;
+			groupingObject[failsCriterion] = innerCollectionForFailingCriterion;
+
+			return groupingObject;
+		}
+
+		if (condition.criterion === "GREATER_THAN_OR_EQUAL") {
+			const valueAsNumber = condition.value as number;
+
+			const innerCollectionForMatchingCriterion: T[] = collection.filter(element => {
+				return (element[attributeName] as unknown as number) >= valueAsNumber
+			});
+			const innerCollectionForFailingCriterion: T[] = collection.filter(element => {
+				return (element[attributeName] as unknown as number) < valueAsNumber
+			});
+
+			groupingObject[meetsCriterion] = innerCollectionForMatchingCriterion;
+			groupingObject[failsCriterion] = innerCollectionForFailingCriterion;
+
+			return groupingObject;
+		}
+
+		if (condition.criterion === "LESS_THAN") {
+			const valueAsNumber = condition.value as number;
+
+			const innerCollectionForMatchingCriterion: T[] = collection.filter(element => {
+				return (element[attributeName] as unknown as number) < valueAsNumber
+			});
+			const innerCollectionForFailingCriterion: T[] = collection.filter(element => {
+				return (element[attributeName] as unknown as number) >= valueAsNumber
+			});
+
+			groupingObject[meetsCriterion] = innerCollectionForMatchingCriterion;
+			groupingObject[failsCriterion] = innerCollectionForFailingCriterion;
+
+			return groupingObject;
+		}
+
+		if (condition.criterion === "LESS_THAN_OR_EQUAL") {
+			const valueAsNumber = condition.value as number;
+
+			const innerCollectionForMatchingCriterion: T[] = collection.filter(element => {
+				return (element[attributeName] as unknown as number) <= valueAsNumber
+			});
+			const innerCollectionForFailingCriterion: T[] = collection.filter(element => {
+				return (element[attributeName] as unknown as number) > valueAsNumber
 			});
 
 			groupingObject[meetsCriterion] = innerCollectionForMatchingCriterion;
@@ -213,11 +271,31 @@ const footballPlayers: FootballPlayer[] = [
 	},
 ];
 
+const countries: Country [] = [
+	{
+		name: "India",
+		population: 1417173173,
+		year: 2022
+	},
+	{
+		name: "China",
+		population: 1425887337,
+		year: 2022
+	},
+	{
+		name: "Chad",
+		population: 18001000,
+		year: 2022
+	},
+	{
+		name: "Tunisia",
+		population: 12356117,
+		year: 2022
+	},
+];
+
 // Basic grouping using a groupable attribute
 const groupedItems = arrayGroup(inventory, "type");
-
-// Grouping using a criterion
-const groupedItemsUsingGreaterThan = arrayGroup(inventory, "quantity", { value: 5, criterion: "GREATER_THAN", groupMeetsCriterion: "ok", groupFailsCriterion: "restock" });
 
 const groupedItemsUsingABoolean = arrayGroup(users, "loggedIn", {
 	value: true,
@@ -244,6 +322,21 @@ const groupedItemsUsingPartialStringMatching = arrayGroup(footballPlayers, "full
 	criterion: "STRING_INCLUDES"
 });
 
+const groupedItemsUsingGreaterThan = arrayGroup(inventory, "quantity", {
+	value: 5,
+	criterion: "GREATER_THAN",
+	groupMeetsCriterion: "ok",
+	groupFailsCriterion: "restock"
+});
+
+const groupedItemsUsingLessthan = arrayGroup(countries, "population", {
+	value: 15000000,
+	criterion: "LESS_THAN",
+	groupMeetsCriterion: "easygoing",
+	groupFailsCriterion: "pumping"
+});
+
+console.log(groupedItemsUsingLessthan);
 /*
 console.log(groupedItems);
 console.log(groupedItemsUsingGreaterThan);
