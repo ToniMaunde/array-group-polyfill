@@ -17,7 +17,6 @@ type FootballPlayer = {
 	jerseyNo: number;
 }
 
-// TODO: do not forget to account for non specified group names
 // And check your phone
 
 type GroupingCondition = {
@@ -34,6 +33,7 @@ function arrayGroup<T extends Object, KeyType extends keyof T>(collection: T[], 
 
 	if (condition !== undefined) {
 
+		const caseSensitive = condition.caseSensitive ?? true;
 		const meetsCriterion = condition.groupMeetsCriterion ?? "passes";
 		const failsCriterion = condition.groupFailsCriterion ?? "fails";
 
@@ -53,15 +53,43 @@ function arrayGroup<T extends Object, KeyType extends keyof T>(collection: T[], 
 		}
 
 		if (condition.criterion === "EQUAL_STRINGS") {
+			const valueAsString = condition.value as string;
+
 			const innerCollectionForMatchingCriterion: T[] = collection.filter(element => {
-				if (condition.caseSensitive) {
-					return (element[attributeName] as unknown as string).toLowerCase() === (condition.value as string).toLowerCase()
+				if (caseSensitive) {
+					return (element[attributeName] as unknown as string) === valueAsString
 				}
-				return (element[attributeName] as unknown as string) === condition.value
+				return (element[attributeName] as unknown as string).toLowerCase() === valueAsString.toLowerCase()
 			});
 
 			const innerCollectionForFailingCriterion: T[] = collection.filter(element => {
-				return (element[attributeName] as unknown as string) !== condition.value
+				if (caseSensitive) {
+					return (element[attributeName] as unknown as string) !== valueAsString
+				}
+				return (element[attributeName] as unknown as string).toLowerCase() !== valueAsString.toLowerCase()
+			});
+
+			groupingObject[meetsCriterion] = innerCollectionForMatchingCriterion;
+			groupingObject[failsCriterion] = innerCollectionForFailingCriterion;
+
+			return groupingObject;
+		}
+
+		if (condition.criterion === "STRING_INCLUDES") {
+			const valueAsString = condition.value as string;
+
+			const innerCollectionForMatchingCriterion: T[] = collection.filter(element => {
+				if (caseSensitive) {
+					return (element[attributeName] as unknown as string).includes(valueAsString)
+				}
+				return (element[attributeName] as unknown as string).toLowerCase().includes(valueAsString.toLowerCase())
+			});
+
+			const innerCollectionForFailingCriterion: T[] = collection.filter(element => {
+				if (caseSensitive) {
+				return !(element[attributeName] as unknown as string).includes(valueAsString)
+				}
+				return !(element[attributeName] as unknown as string).toLowerCase().includes(valueAsString.toLowerCase())
 			});
 
 			groupingObject[meetsCriterion] = innerCollectionForMatchingCriterion;
@@ -208,14 +236,19 @@ const groupedItemsUsingMatchingStrings = arrayGroup(users, "lastName", {
 const groupedItemsUsingEqualNumbers = arrayGroup(footballPlayers, "jerseyNo", {
 	value: 7,
 	criterion: "EQUAL_NUMBERS",
-	groupMeetsCriterion: "iconic",
-	groupFailsCriterion: "meh"
+});
+
+const groupedItemsUsingPartialStringMatching = arrayGroup(footballPlayers, "fullName", {
+	value: "r",
+	caseSensitive: false,
+	criterion: "STRING_INCLUDES"
 });
 
 /*
 console.log(groupedItems);
 console.log(groupedItemsUsingGreaterThan);
 console.log(groupedItemsUsingABoolean);
-console.log(groupedItemsUsingMatchingStrings);
-*/
 console.log(groupedItemsUsingEqualNumbers);
+console.log(groupedItemsUsingMatchingStrings);
+console.log(groupedItemsUsingPartialStringMatching);
+*/
