@@ -6,7 +6,7 @@ type GroupingCondition = {
 	groupFailsCriterion?: string;
 }
 
-function arrayGroup<T extends Object, KeyType extends keyof T>(collection: T[], attributeName: KeyType, condition?: GroupingCondition) {
+export function group<T extends Object, KeyType extends keyof T>(collection: T[], attributeName: KeyType, condition?: GroupingCondition) {
 
 	const groupingObject: Record<string, T[]> = {};
 
