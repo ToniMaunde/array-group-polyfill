@@ -1,7 +1,7 @@
 name: Publish
 on:
   workflow_run:
-    worflows: ["basic-ci"]
+    worflows: [CI]
     types:
       - completed
   push:
