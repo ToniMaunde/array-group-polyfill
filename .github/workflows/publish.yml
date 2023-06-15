@@ -28,3 +28,4 @@ jobs:
           publish: npm run release
         env:
           NPM_TOKEN: ${{ secrets.npm_token }}
+          GITHUB_TOKEN: ${{ secrets.thehub_token }}
