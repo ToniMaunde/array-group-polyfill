@@ -2,7 +2,7 @@
   "name": "array-group-polyfill",
   "version": "0.1.0",
   "description": "A polyfill for the yet to be supported by all browsers Array.prototype.group()",
-  "main": "index.ts",
+  "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
