@@ -1,4 +1,4 @@
-name: array-polyfills
+name: basic-ci
 
 on:
   push:
