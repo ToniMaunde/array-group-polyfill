@@ -1,5 +1,11 @@
 # array-group-polyfill
 
+## 0.1.2
+
+### Patch Changes
+
+- f753257: adding export for the main type 'GroupingOption'
+
 ## 0.1.1
 
 ### Patch Changes
