@@ -1,5 +1,11 @@
 # array-group-polyfill
 
+## 0.1.3
+
+### Patch Changes
+
+- 3a25d14: adding the README file
+
 ## 0.1.2
 
 ### Patch Changes
