@@ -1,6 +1,6 @@
 {
   "name": "array-group-polyfill",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A polyfill for the yet to be supported by all browsers Array.prototype.group()",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
